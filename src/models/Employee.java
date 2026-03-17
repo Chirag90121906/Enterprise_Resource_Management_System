@@ -2,9 +2,9 @@ package models;
 
 public class Employee {
 
-    int id;
-    String name;
-    double salary;
+    private int id;
+    private String name;
+    private double salary;
 
     public Employee(int id, String name, double salary) {
         this.id = id;
@@ -12,8 +12,8 @@ public class Employee {
         this.salary = salary;
     }
 
-    public void display() {
-        System.out.println(id + " " + name + " " + salary);
-    }
+    public int getId() { return id; }
+    public String getName() { return name; }
+    public double getSalary() { return salary; }
 
 }
