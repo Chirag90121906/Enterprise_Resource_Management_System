@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import models.Employee;
+import services.IntelligenceService;
 import utils.FileHandler;
 
 public final class WebServer {
@@ -50,6 +51,8 @@ public final class WebServer {
 
         if ("/api/dashboard".equals(path) && "GET".equals(method)) {
             sendJson(exchange, 200, dashboardJson());
+        } else if ("/api/intelligence".equals(path) && "GET".equals(method)) {
+            sendJson(exchange, 200, IntelligenceService.dashboardJson());
         } else if ("/api/employees".equals(path) && "GET".equals(method)) {
             sendJson(exchange, 200, employeesJson(FileHandler.loadEmployees()));
         } else if ("/api/employees".equals(path) && "POST".equals(method)) {

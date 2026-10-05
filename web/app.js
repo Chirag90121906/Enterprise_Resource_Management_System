@@ -4,7 +4,8 @@ const state = {
   employees: [],
   inventory: [],
   sales: [],
-  summary: {}
+  summary: {},
+  intelligence: []
 };
 
 const view = document.querySelector('#view');
@@ -28,16 +29,18 @@ async function api(path, options = {}) {
 
 async function refreshData(showMessage = false) {
   try {
-    const [summary, employees, inventory, sales] = await Promise.all([
+    const [summary, employees, inventory, sales, intelligence] = await Promise.all([
       api('/api/dashboard'),
       api('/api/employees'),
       api('/api/inventory'),
-      api('/api/sales')
+      api('/api/sales'),
+      api('/api/intelligence')
     ]);
     state.summary = summary;
     state.employees = employees;
     state.inventory = inventory;
     state.sales = sales;
+    state.intelligence = intelligence && Array.isArray(intelligence.actionCenter) ? intelligence.actionCenter : [];
     document.querySelector('#alert-dot').hidden = summary.lowStockCount === 0;
     render();
     if (showMessage) toast('Workspace data refreshed.');
@@ -83,6 +86,7 @@ function renderOverview() {
     .slice(0, 4);
   const latestSales = filtered(state.sales, ['product', 'id', 'amount']).slice().reverse().slice(0, 5);
   const lowStockCount = Number(summary.lowStockCount || 0);
+  const insights = buildIntelligenceInsights();
 
   return `
     <section class="page-heading">
@@ -94,6 +98,24 @@ function renderOverview() {
       ${metricCard('box', 'Products', summary.productCount || 0, `${summary.stockUnits || 0} units in stock`, 'blue')}
       ${metricCard('receipt', 'Sales recorded', summary.salesCount || 0, 'Across all entries', 'amber')}
       ${metricCard('chart', 'Recorded revenue', formatMoney(summary.revenue || 0), `${lowStockCount} ${lowStockCount === 1 ? 'item needs' : 'items need'} attention`, 'coral')}
+    </section>
+    <section class="smart-insights" aria-label="Actionable intelligence">
+      <article class="panel insight-panel">
+        <div class="panel-heading"><div><h2>Today’s actions</h2><p>Priority-driven recommendations from current data</p></div><span class="chart-legend"><i></i>Live insight</span></div>
+        <div class="insight-list">
+          ${insights.map(item => `
+            <button class="insight-item ${item.level}" type="button" data-route="${item.route}">
+              <span class="insight-meta">
+                <span class="priority-tag ${item.level}">${item.priority}</span>
+                <span class="insight-source">${escapeHtml(item.source)}</span>
+              </span>
+              <strong>${escapeHtml(item.title)}</strong>
+              <p>${escapeHtml(item.reason)}</p>
+              <span class="insight-action">${escapeHtml(item.action)}</span>
+            </button>
+          `).join('')}
+        </div>
+      </article>
     </section>
     <section class="dashboard-grid">
       <article class="panel">
@@ -212,6 +234,71 @@ function revenueRows() {
 
 function reportTotal(label, value) {
   return `<div class="stock-row"><span class="stock-name">${label}</span><strong class="amount-cell">${value}</strong></div>`;
+}
+
+function buildIntelligenceInsights() {
+  if (state.intelligence && state.intelligence.length) {
+    return state.intelligence.slice(0, 3).map(item => ({
+      priority: item.priority || 'OPTIONAL',
+      level: item.level || 'info',
+      source: item.source || 'Insight',
+      title: item.title || 'Action recommended',
+      reason: item.reason || 'Review this item to keep operations on track.',
+      action: item.action || 'Review detail',
+      route: item.route || 'overview'
+    }));
+  }
+
+  const lowStockItems = state.inventory.filter(item => Number(item.quantity) <= 5);
+  const revenueItems = Object.entries(
+    state.sales.reduce((groups, sale) => {
+      const product = sale.product || 'Unassigned';
+      groups[product] = (groups[product] || 0) + Number(sale.amount || 0);
+      return groups;
+    }, {})
+  ).sort((first, second) => second[1] - first[1]);
+
+  const insights = [];
+
+  if (lowStockItems.length) {
+    const item = lowStockItems[0];
+    insights.push({
+      priority: 'URGENT',
+      level: 'critical',
+      source: 'Inventory',
+      title: `${lowStockItems.length} product${lowStockItems.length === 1 ? '' : 's'} need attention`,
+      reason: `${item.name} is down to ${item.quantity} units and should be reviewed before the next cycle.`,
+      action: 'Review stock levels',
+      route: 'inventory'
+    });
+  }
+
+  if (revenueItems.length) {
+    const [topProduct, topRevenue] = revenueItems[0];
+    insights.push({
+      priority: 'RECOMMENDED',
+      level: 'warning',
+      source: 'Sales',
+      title: `${topProduct} is leading the sales mix`,
+      reason: `${formatMoney(topRevenue)} in recorded sales suggests a strong demand pattern worth monitoring.`,
+      action: 'View sales performance',
+      route: 'sales'
+    });
+  }
+
+  if (state.employees.length) {
+    insights.push({
+      priority: 'OPTIONAL',
+      level: 'info',
+      source: 'People',
+      title: 'Team capacity looks balanced',
+      reason: 'The current team size supports active monitoring without immediate staffing risk.',
+      action: 'Review workforce overview',
+      route: 'employees'
+    });
+  }
+
+  return insights.slice(0, 3);
 }
 
 function filtered(records, keys) {
