@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7f4">
+  <title>ERM | Operations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24"><path d="m12 3 9 5v8l-9 5-9-5V8l9-5Z"/><path d="m3.5 8.5 8.5 5 8.5-5M12 13.5V21M7.5 5.5l9 5"/></symbol>
+    <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M5 3h14v18l-3-2-4 2-4-2-3 2V3Z"/><path d="M9 8h6M9 12h6M9 16h3"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 19V5M4 19h17"/><path d="m7 15 4-4 3 2 6-7"/><path d="M16 6h4v4"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M5 21h14"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9A7 7 0 0 1 18 6l2 6M4 12l2 6a7 7 0 0 0 12.4-3"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M5 7l1 14h12l1-14M9 7V4h6v3"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  </svg>
+
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Primary navigation">
+      <a class="brand" href="/" aria-label="ERM overview">
+        <span class="brand-mark"><span></span><span></span><span></span><span></span></span>
+        <span class="brand-copy"><strong>orbit</strong><small>RESOURCE SYSTEM</small></span>
+      </a>
+      <div class="nav-caption">WORKSPACE</div>
+      <nav class="main-nav">
+        <button class="nav-item is-active" type="button" data-route="overview"><svg><use href="#i-grid"></use></svg><span>Overview</span><kbd>1</kbd></button>
+        <button class="nav-item" type="button" data-route="employees"><svg><use href="#i-users"></use></svg><span>Employees</span><kbd>2</kbd></button>
+        <button class="nav-item" type="button" data-route="inventory"><svg><use href="#i-box"></use></svg><span>Inventory</span><kbd>3</kbd></button>
+        <button class="nav-item" type="button" data-route="sales"><svg><use href="#i-receipt"></use></svg><span>Sales</span><kbd>4</kbd></button>
+        <button class="nav-item" type="button" data-route="reports"><svg><use href="#i-chart"></use></svg><span>Reports</span></button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="sync-indicator"><span class="sync-dot"></span><span><strong>Local workspace</strong><small>Changes save to files</small></span></div>
+        <div class="profile-chip"><span class="profile-avatar">C</span><span><strong>Workspace</strong><small>Administrator</small></span><span class="profile-menu">···</span></div>
+      </div>
+    </aside>
+
+    <div class="main-column">
+      <header class="topbar">
+        <div class="breadcrumbs"><span>Workspace</span><span class="crumb-separator">/</span><strong id="section-title">Overview</strong></div>
+        <div class="topbar-tools">
+          <label class="global-search"><svg><use href="#i-search"></use></svg><input id="global-search" type="search" placeholder="Search this view" autocomplete="off"><kbd>⌘ K</kbd></label>
+          <button class="icon-button alert-button" type="button" data-route="inventory" title="View stock alerts" aria-label="View stock alerts"><svg><use href="#i-bell"></use></svg><span class="alert-dot" id="alert-dot"></span></button>
+          <span class="topbar-divider"></span>
+          <span class="profile-avatar top-avatar" aria-label="Workspace profile">C</span>
+        </div>
+      </header>
+
+      <main id="view" class="page-content" tabindex="-1" aria-live="polite"></main>
+    </div>
+  </div>
+
+  <dialog class="record-dialog" id="record-dialog" aria-labelledby="dialog-title">
+    <form id="record-form">
+      <div class="dialog-heading">
+        <div><span class="eyebrow">WORKSPACE ENTRY</span><h2 id="dialog-title">New record</h2></div>
+        <button class="icon-button" type="button" data-action="close-dialog" title="Close" aria-label="Close dialog">×</button>
+      </div>
+      <div id="dialog-fields" class="dialog-fields"></div>
+      <p class="form-note">This record is saved to your local project files.</p>
+      <div class="dialog-actions"><button class="button button-quiet" type="button" data-action="close-dialog">Cancel</button><button class="button button-primary" type="submit"><svg><use href="#i-check"></use></svg>Save record</button></div>
+    </form>
+  </dialog>
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+</body>
+</html>
